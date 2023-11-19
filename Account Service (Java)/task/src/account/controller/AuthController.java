@@ -1,5 +1,7 @@
 package account.controller;
 
+import account.service.RegistrationService;
+import account.model.AppUser;
 import account.model.SingUpDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,17 +14,24 @@ import org.springframework.web.server.ResponseStatusException;
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+    
+    private final RegistrationService registrationService;
+
+    public AuthController(RegistrationService registrationService) {
+        this.registrationService = registrationService;
+    }
 
     @PostMapping("/signup")
     public ResponseEntity<SingUpDTO> signup(@RequestBody SingUpDTO singUpDTO) {
         var name = notEmpty(singUpDTO.getName());
         var lastname = notEmpty(singUpDTO.getLastname());
         var email = notEmpty(singUpDTO.getEmail());
-        if (!email.endsWith("@acme.com")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
         var password = notEmpty(singUpDTO.getPassword());
-        return ResponseEntity.ok(new SingUpDTO(name, lastname, email, password));
+
+        AppUser registered = registrationService.register(name, lastname, email, password);
+        singUpDTO.setId(registered.getId());
+
+        return ResponseEntity.ok(singUpDTO);
     }
 
     private static String notEmpty(String string) {

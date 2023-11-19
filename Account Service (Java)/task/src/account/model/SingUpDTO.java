@@ -4,6 +4,9 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 
 public class SingUpDTO {
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private Long id;
     private String name;
     private String lastname;
     private String email;
@@ -18,6 +21,21 @@ public class SingUpDTO {
         this.lastname = lastname;
         this.email = email;
         this.password = password;
+    }
+
+    public SingUpDTO(Long id, String name, String lastname, String email) {
+        this.id = id;
+        this.name = name;
+        this.lastname = lastname;
+        this.email = email;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
