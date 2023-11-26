@@ -4,6 +4,13 @@ Content-Type: application/json
 {
    "name": "John",
    "lastname": "Doe",
-   "email": "johndoe@acme.com",
+   "email": "johndoe1@acme.com",
    "password": "secret"
 }
+
+###
+
+GET http://localhost:28852/api/empl/payment
+
+###
+GET http://localhost:28852/error

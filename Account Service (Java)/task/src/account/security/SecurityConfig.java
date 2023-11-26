@@ -17,11 +17,12 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .httpBasic(Customizer.withDefaults())
-//                .exceptionHandling(ex -> ex.authenticationEntryPoint(new RestAuthenticationEntryPoint())) // Handle auth errors
+                .exceptionHandling(ex -> ex.authenticationEntryPoint(new RestAuthenticationEntryPoint())) // Handle auth errors
                 .csrf(csrf -> csrf.disable()) // For Postman
                 .headers(headers -> headers.frameOptions().disable()) // For the H2 console
                 .authorizeHttpRequests(auth -> auth  // manage access
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
+                        .requestMatchers("/error").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/empl/payment").authenticated()
                         .anyRequest().denyAll()
                 )

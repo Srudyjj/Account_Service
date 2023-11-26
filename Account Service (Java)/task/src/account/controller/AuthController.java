@@ -25,7 +25,7 @@ public class AuthController {
     public ResponseEntity<SingUpDTO> signup(@RequestBody SingUpDTO singUpDTO) {
         var name = notEmpty(singUpDTO.getName());
         var lastname = notEmpty(singUpDTO.getLastname());
-        var email = notEmpty(singUpDTO.getEmail());
+        var email = validEmail(notEmpty(singUpDTO.getEmail()));
         var password = notEmpty(singUpDTO.getPassword());
 
         AppUser registered = registrationService.register(name, lastname, email, password);
@@ -36,6 +36,13 @@ public class AuthController {
 
     private static String notEmpty(String string) {
         if (string == null || string.isBlank()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
+        }
+        return string;
+    }
+
+    private static String validEmail(String string) {
+        if (!string.contains("@") || !string.endsWith("@acme.com")) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
         }
         return string;

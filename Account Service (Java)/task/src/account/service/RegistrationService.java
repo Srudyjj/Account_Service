@@ -24,7 +24,7 @@ public class RegistrationService {
     }
 
     public AppUser register(String name, String lastname, String email, String password) {
-        Optional<AppUser> appUserByEmail = repository.findAppUserByEmail(email);
+        Optional<AppUser> appUserByEmail = repository.findAppUserByEmailIgnoreCase(email);
         if (appUserByEmail.isPresent()) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "User exist!");
         }
