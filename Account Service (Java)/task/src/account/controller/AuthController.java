@@ -1,5 +1,7 @@
 package account.controller;
 
+import account.model.ChangePassRequest;
+import account.model.ChangePassResponce;
 import account.service.RegistrationService;
 import account.model.AppUser;
 import account.model.SingUpDTO;
@@ -32,6 +34,12 @@ public class AuthController {
         singUpDTO.setId(registered.getId());
 
         return ResponseEntity.ok(singUpDTO);
+    }
+
+    @PostMapping("/changepass")
+    public ResponseEntity<ChangePassResponce> changepass(@RequestBody ChangePassRequest request) {
+        return ResponseEntity.ok(new ChangePassResponce(request.getNewPassword(),
+                "The password has been updated successfully"));
     }
 
     private static String notEmpty(String string) {

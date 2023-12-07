@@ -15,3 +15,13 @@ Authorization: Basic am9obmRvZTFAYWNtZS5jb206c2VjcmV0
 
 ###
 GET http://localhost:28852/error
+
+###
+
+POST http://localhost:28852/api/auth/changepass
+Content-Type: application/json
+Authorization: Basic am9obmRvZTFAYWNtZS5jb206c2VjcmV0
+
+{
+   "new_password": "newPassword"
+}
