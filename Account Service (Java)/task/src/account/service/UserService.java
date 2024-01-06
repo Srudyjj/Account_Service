@@ -1,6 +1,6 @@
 package account.service;
 
-import account.model.AppUser;
+import account.model.entity.AppUser;
 import account.repository.AppUserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

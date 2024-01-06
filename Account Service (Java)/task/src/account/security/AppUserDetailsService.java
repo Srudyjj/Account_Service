@@ -1,6 +1,6 @@
 package account.security;
 
-import account.model.AppUser;
+import account.model.entity.AppUser;
 import account.repository.AppUserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

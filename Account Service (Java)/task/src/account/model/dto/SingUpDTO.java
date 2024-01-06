@@ -1,16 +1,24 @@
-package account.model;
+package account.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.*;
 
 public class SingUpDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private Long id;
+    @NotBlank
     private String name;
+    @NotBlank
     private String lastname;
+    @NotBlank
+    @Email
+    @Pattern(regexp = "^.+@acme\\.com$")
     private String email;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @NotBlank
+    @Size(min = 12, message = "Password length must be 12 chars minimum!")
     private String password;
 
     public SingUpDTO() {

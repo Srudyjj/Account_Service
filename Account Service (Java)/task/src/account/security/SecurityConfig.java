@@ -22,7 +22,10 @@ public class SecurityConfig {
                 .headers(headers -> headers.frameOptions().disable()) // For the H2 console
                 .authorizeHttpRequests(auth -> auth  // manage access
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/acct/payments").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/acct/payments").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/changepass").authenticated()
+                        .requestMatchers("/h2-console").permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/shutdown").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/empl/payment").authenticated()
@@ -37,6 +40,6 @@ public class SecurityConfig {
 
     @Bean
     public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        return new BCryptPasswordEncoder(13);
     }
 }
