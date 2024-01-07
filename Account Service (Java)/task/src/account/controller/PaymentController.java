@@ -10,11 +10,14 @@ import account.model.entity.Payment;
 import account.repository.PaymentRepository;
 import account.service.PaymentService;
 import account.service.UserService;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,17 +36,27 @@ public class PaymentController {
     }
 
     @GetMapping("/api/empl/payment")
-    public ResponseEntity<?> payment(@AuthenticationPrincipal UserDetails details, @RequestParam(required = false) String period) {
+    public ResponseEntity<?> payment(@AuthenticationPrincipal UserDetails details,
+                                     @RequestParam(value = "period", required = false)
+                                     @DateTimeFormat(pattern = "MM-yyyy") LocalDate period) {
         AppUser user = userService.findUserByEmail(details.getUsername());
+        if (period != null) {
+            return ResponseEntity.ok(paymentService.getPaymentsForUserAndPeriod(user, period));
+        }
         List<PaymentDTOOut> payments = paymentService.getPaymentsForUser(user);
         return ResponseEntity.ok(payments);
     }
 
     @PostMapping("api/acct/payments")
     public ResponseEntity<Status> addPayments(@RequestBody List<PaymentDTOIn> payments) {
-        payments.forEach(System.out::println);
         paymentService.savePayments(payments);
         return ResponseEntity.ok(new Status("Added successfully!"));
+    }
+
+    @PutMapping("api/acct/payments")
+    public ResponseEntity<Status> editPayments(@RequestBody PaymentDTOIn payment) {
+        paymentService.editPayment(payment);
+        return ResponseEntity.ok(new Status("Updated successfully!"));
     }
 
     @GetMapping("api/acct/payments")

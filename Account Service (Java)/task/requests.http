@@ -11,7 +11,12 @@ Content-Type: application/json
 ###
 
 GET http://localhost:28852/api/empl/payment
-Authorization: Basic am9obmRvZTFAYWNtZS5jb206c2VjcmV0
+Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXQ=
+
+###
+
+GET http://localhost:28852/api/empl/payment?period=01-2021
+Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXQ=
 
 ###
 GET http://localhost:28852/error

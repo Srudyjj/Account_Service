@@ -1,6 +1,7 @@
 package account.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.h2.jdbc.JdbcSQLIntegrityConstraintViolationException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -41,5 +42,23 @@ public class ErrorHandlingControllerAdvice {
                 .body(body);
     }
 
+    @ExceptionHandler(JdbcSQLIntegrityConstraintViolationException.class)
+    public ResponseEntity<?> onJdbcSQLIntegrityConstraintViolationException(
+            JdbcSQLIntegrityConstraintViolationException e,
+            HttpServletRequest request) {
+        logger.info(e.getMessage());
+
+        ErrorDTO body = new ErrorDTO(
+                LocalDateTime.now(),
+                HttpStatus.BAD_REQUEST.value(),
+                HttpStatus.BAD_REQUEST.getReasonPhrase(),
+                "Duplicated entry in payment list",
+                request.getRequestURI());
+
+        return ResponseEntity
+                .badRequest()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(body);
+    }
 
 }
