@@ -2,10 +2,15 @@ package account.model.entity;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Entity
-@Table(name = "app_user")
+@Table(name = "app_user",
+        uniqueConstraints = @UniqueConstraint(
+                columnNames = {"email"},
+                name = "unique_email"))
 public class AppUser {
 
     @Id
@@ -17,7 +22,7 @@ public class AppUser {
     @Column(nullable = false)
     private String lastname;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String email;
 
     @Column(nullable = false)
@@ -25,6 +30,9 @@ public class AppUser {
 
     @Column(nullable = false)
     private String authority;
+
+    @ManyToMany(mappedBy = "users")
+    private Set<Group> userGroups = new HashSet<>();
 
     public AppUser() {
     }
@@ -83,6 +91,14 @@ public class AppUser {
 
     public void setAuthority(String authority) {
         this.authority = authority;
+    }
+
+    public Set<Group> getUserGroups() {
+        return userGroups;
+    }
+
+    private void setUserGroups(Set<Group> userGroups) {
+        this.userGroups = userGroups;
     }
 
     @Override
