@@ -28,21 +28,17 @@ public class AppUser {
     @Column(nullable = false)
     private String password;
 
-    @Column(nullable = false)
-    private String authority;
-
     @ManyToMany(mappedBy = "users")
     private Set<Group> userGroups = new HashSet<>();
 
     public AppUser() {
     }
 
-    public AppUser(String name, String lastname, String email, String password, String authority) {
+    public AppUser(String name, String lastname, String email, String password) {
         this.name = name;
         this.lastname = lastname;
         this.email = email;
         this.password = password;
-        this.authority = authority;
     }
 
     public Long getId() {
@@ -85,20 +81,16 @@ public class AppUser {
         this.password = password;
     }
 
-    public String getAuthority() {
-        return authority;
-    }
-
-    public void setAuthority(String authority) {
-        this.authority = authority;
-    }
-
     public Set<Group> getUserGroups() {
         return userGroups;
     }
 
     private void setUserGroups(Set<Group> userGroups) {
         this.userGroups = userGroups;
+    }
+
+    public void setUserGroup(Group group) {
+        this.userGroups.add(group);
     }
 
     @Override

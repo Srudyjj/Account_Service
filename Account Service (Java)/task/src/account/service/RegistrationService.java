@@ -1,7 +1,10 @@
 package account.service;
 
+import account.model.ROLE;
 import account.model.entity.AppUser;
+import account.model.entity.Group;
 import account.repository.AppUserRepository;
+import account.repository.GroupRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -11,7 +14,6 @@ import java.util.Optional;
 
 @Service
 public class RegistrationService {
-    private static final String USER_ROLE = "USER";
 
     private final AppUserRepository repository;
 
@@ -19,10 +21,13 @@ public class RegistrationService {
 
     private final BreachedPasswordsService passwordsService;
 
-    public RegistrationService(AppUserRepository repository, PasswordEncoder passwordEncoder, BreachedPasswordsService passwordsService) {
+    private final GroupRepository groupRepository;
+
+    public RegistrationService(AppUserRepository repository, PasswordEncoder passwordEncoder, BreachedPasswordsService passwordsService, GroupRepository groupRepository) {
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.passwordsService = passwordsService;
+        this.groupRepository = groupRepository;
     }
 
     public AppUser register(String name, String lastname, String email, String password) {
@@ -32,7 +37,10 @@ public class RegistrationService {
         }
         passwordsService.validate(password);
 
-        return repository.save(new AppUser(name, lastname, email.toLowerCase(), passwordEncoder.encode(password), USER_ROLE));
+        AppUser user = new AppUser(name, lastname, email.toLowerCase(), passwordEncoder.encode(password));
+        setUserGroup(user);
+
+        return repository.save(user);
     }
 
     public String updatePassword(String email, String password) {
@@ -48,5 +56,15 @@ public class RegistrationService {
         appUser.setPassword(passwordEncoder.encode(password));
         repository.save(appUser);
         return appUser.getEmail();
+    }
+
+    private void setUserGroup(AppUser appUser) {
+        if(repository.count() == 0) {
+            Group administrator = groupRepository.findByNameIgnoreCase(ROLE.ADMINISTRATOR).orElseThrow();
+            appUser.setUserGroup(administrator);
+        } else {
+            Group administrator = groupRepository.findByNameIgnoreCase(ROLE.USER).orElseThrow();
+            appUser.setUserGroup(administrator);
+        }
     }
 }

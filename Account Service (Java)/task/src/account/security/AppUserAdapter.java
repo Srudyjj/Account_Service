@@ -1,12 +1,14 @@
 package account.security;
 
 import account.model.entity.AppUser;
+import account.model.entity.Group;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class AppUserAdapter implements UserDetails {
 
@@ -18,7 +20,9 @@ public class AppUserAdapter implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(user.getAuthority()));
+        return user.getUserGroups().stream()
+                .map(group -> new SimpleGrantedAuthority(group.getCode().toUpperCase()))
+                .collect(Collectors.toList());
     }
 
     @Override

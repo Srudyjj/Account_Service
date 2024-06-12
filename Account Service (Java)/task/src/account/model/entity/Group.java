@@ -11,7 +11,8 @@ public class Group {
     public Group() {
     }
 
-    public Group(String name) {
+    public Group(String code, String name) {
+        this.code = code;
         this.name = name;
     }
 
@@ -20,6 +21,8 @@ public class Group {
     private Long id;
 
     private String name;
+
+    private String code;
 
     @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     @JoinTable(
@@ -34,6 +37,14 @@ public class Group {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getName() {
