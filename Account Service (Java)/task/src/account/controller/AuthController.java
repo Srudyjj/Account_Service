@@ -2,6 +2,7 @@ package account.controller;
 
 import account.model.dto.ChangePassRequest;
 import account.model.dto.ChangePassResponse;
+import account.model.entity.Group;
 import account.service.RegistrationService;
 import account.model.entity.AppUser;
 import account.model.dto.SingUpDTO;
@@ -35,6 +36,7 @@ public class AuthController {
 
         AppUser registered = registrationService.register(name, lastname, email, password);
         singUpDTO.setId(registered.getId());
+        singUpDTO.setRoles(registered.getUserGroups().stream().map(Group::getName).toList());
 
         return ResponseEntity.ok(singUpDTO);
     }

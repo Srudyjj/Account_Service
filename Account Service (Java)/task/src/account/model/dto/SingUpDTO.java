@@ -3,6 +3,9 @@ package account.model.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SingUpDTO {
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
@@ -20,6 +23,8 @@ public class SingUpDTO {
     @NotBlank
     @Size(min = 12, message = "Password length must be 12 chars minimum!")
     private String password;
+
+    private List<String> roles = new ArrayList<>();
 
     public SingUpDTO() {
     }
@@ -76,5 +81,13 @@ public class SingUpDTO {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
     }
 }
