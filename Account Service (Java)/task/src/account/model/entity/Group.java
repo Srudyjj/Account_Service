@@ -27,7 +27,7 @@ public class Group {
 
     private String code;
 
-    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    @ManyToMany(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinTable(
             name = "user_groups",
             joinColumns = @JoinColumn(name = "app_user_id", foreignKey = @ForeignKey(name = "app_user_group_fk")),
@@ -68,5 +68,11 @@ public class Group {
 
     public void addUser(AppUser user) {
         this.users.add(user);
+        user.getUserGroups().add(this);
+    }
+
+    public void removeUser(AppUser user) {
+        this.users.remove(user);
+        user.getUserGroups().remove(this);
     }
 }

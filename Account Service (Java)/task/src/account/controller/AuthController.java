@@ -3,7 +3,7 @@ package account.controller;
 import account.model.dto.ChangePassRequest;
 import account.model.dto.ChangePassResponse;
 import account.model.entity.Group;
-import account.service.RegistrationService;
+import account.service.UserService;
 import account.model.entity.AppUser;
 import account.model.dto.SingUpDTO;
 import jakarta.validation.Valid;
@@ -21,10 +21,10 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/api/auth")
 public class AuthController {
     
-    private final RegistrationService registrationService;
+    private final UserService userService;
 
-    public AuthController(RegistrationService registrationService) {
-        this.registrationService = registrationService;
+    public AuthController(UserService userService) {
+        this.userService = userService;
     }
 
     @PostMapping("/signup")
@@ -34,7 +34,7 @@ public class AuthController {
         var email = singUpDTO.getEmail();
         var password = singUpDTO.getPassword();
 
-        AppUser registered = registrationService.register(name, lastname, email, password);
+        AppUser registered = userService.register(name, lastname, email, password);
         singUpDTO.setId(registered.getId());
         singUpDTO.setRoles(registered.getUserGroups().stream().map(Group::getName).toList());
 
@@ -43,7 +43,7 @@ public class AuthController {
 
     @PostMapping("/changepass")
     public ResponseEntity<ChangePassResponse> changepass(@AuthenticationPrincipal UserDetails details, @Valid @RequestBody ChangePassRequest request) {
-        String email = registrationService.updatePassword(details.getUsername(), request.getNewPassword());
+        String email = userService.updatePassword(details.getUsername(), request.getNewPassword());
         return ResponseEntity.ok(new ChangePassResponse(email,
                 "The password has been updated successfully"));
     }

@@ -94,6 +94,13 @@ public class AppUser {
         group.addUser(this);
     }
 
+    @PreRemove
+    private void removeGroupAssociations() {
+        for (Group group : userGroups) {
+            group.removeUser(this);
+        }
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

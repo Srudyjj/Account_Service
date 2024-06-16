@@ -27,6 +27,7 @@ public class SecurityConfig {
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/shutdown").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/admin/user").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/api/admin/user/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/acct/payments").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/acct/payments").permitAll()
