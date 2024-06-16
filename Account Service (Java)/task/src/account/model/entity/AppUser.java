@@ -28,7 +28,7 @@ public class AppUser {
     @Column(nullable = false)
     private String password;
 
-    @ManyToMany(mappedBy = "users")
+    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Group> userGroups = new HashSet<>();
 
     public AppUser() {
@@ -91,6 +91,7 @@ public class AppUser {
 
     public void setUserGroup(Group group) {
         this.userGroups.add(group);
+        group.addUser(this);
     }
 
     @Override

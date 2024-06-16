@@ -10,6 +10,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
+import static org.springframework.boot.autoconfigure.security.servlet.PathRequest.toH2Console;
+
 @Configuration
 public class SecurityConfig {
 
@@ -18,17 +20,18 @@ public class SecurityConfig {
         http
                 .httpBasic(Customizer.withDefaults())
                 .exceptionHandling(ex -> ex.authenticationEntryPoint(new RestAuthenticationEntryPoint())) // Handle auth errors
-                .csrf(csrf -> csrf.disable()) // For Postman
+                .csrf(csrf -> csrf.ignoringRequestMatchers(toH2Console()).disable())
                 .headers(headers -> headers.frameOptions().disable()) // For the H2 console
                 .authorizeHttpRequests(auth -> auth  // manage access
+                        .requestMatchers(toH2Console()).permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .requestMatchers("/actuator/shutdown").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/admin/user").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/acct/payments").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/api/acct/payments").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/acct/payments").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/changepass").authenticated()
-                        .requestMatchers("/h2-console").permitAll()
-                        .requestMatchers("/error").permitAll()
-                        .requestMatchers("/actuator/shutdown").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/empl/payment").authenticated()
                         .anyRequest().denyAll()
                 )

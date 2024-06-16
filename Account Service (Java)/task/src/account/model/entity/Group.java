@@ -5,7 +5,10 @@ import jakarta.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "app_groups")
+@Table(name = "app_groups",
+        uniqueConstraints = @UniqueConstraint(
+            columnNames = {"name", "code"},
+            name = "unique_group"))
 public class Group {
 
     public Group() {
@@ -61,5 +64,9 @@ public class Group {
 
     private void setUsers(Set<AppUser> users) {
         this.users = users;
+    }
+
+    public void addUser(AppUser user) {
+        this.users.add(user);
     }
 }

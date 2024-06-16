@@ -10,6 +10,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -28,6 +29,10 @@ public class RegistrationService {
         this.passwordEncoder = passwordEncoder;
         this.passwordsService = passwordsService;
         this.groupRepository = groupRepository;
+    }
+
+    public List<AppUser> getUsers() {
+        return repository.findAllByOrderByIdAsc();
     }
 
     public AppUser register(String name, String lastname, String email, String password) {

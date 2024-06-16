@@ -1,5 +1,7 @@
 package account.model.dto;
 
+import account.model.entity.AppUser;
+import account.model.entity.Group;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 
@@ -41,6 +43,14 @@ public class SingUpDTO {
         this.name = name;
         this.lastname = lastname;
         this.email = email;
+    }
+
+    public SingUpDTO(AppUser appUser) {
+        this.id = appUser.getId();
+        this.name = appUser.getName();
+        this.lastname = appUser.getLastname();
+        this.email = appUser.getEmail();
+        this.roles = appUser.getUserGroups().stream().map(Group::getName).toList();
     }
 
     public Long getId() {
