@@ -50,7 +50,11 @@ public class SingUpDTO {
         this.name = appUser.getName();
         this.lastname = appUser.getLastname();
         this.email = appUser.getEmail();
-        this.roles = appUser.getUserGroups().stream().map(Group::getName).toList();
+        this.roles = appUser.getUserGroups()
+                .stream()
+                .map(Group::getName)
+                .sorted()
+                .toList();
     }
 
     public Long getId() {

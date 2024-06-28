@@ -89,13 +89,16 @@ public class AppUser {
         this.userGroups = userGroups;
     }
 
-    public void setUserGroup(Group group) {
-        this.userGroups.add(group);
+    public void addUserGroup(Group group) {
         group.addUser(this);
     }
 
+    public void removeUserGroup(Group group) {
+        group.removeUser(this);
+    }
+
     @PreRemove
-    private void removeGroupAssociations() {
+    private void removeGroupsAssociations() {
         for (Group group : userGroups) {
             group.removeUser(this);
         }

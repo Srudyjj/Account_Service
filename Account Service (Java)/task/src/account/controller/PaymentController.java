@@ -9,6 +9,7 @@ import account.model.entity.Payment;
 import account.repository.PaymentRepository;
 import account.service.PaymentService;
 import account.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -46,13 +47,13 @@ public class PaymentController {
     }
 
     @PostMapping("api/acct/payments")
-    public ResponseEntity<Status> addPayments(@RequestBody List<PaymentDTOIn> payments) {
+    public ResponseEntity<Status> addPayments(@Valid @RequestBody List<PaymentDTOIn> payments) {
         paymentService.savePayments(payments);
         return ResponseEntity.ok(new Status("Added successfully!"));
     }
 
     @PutMapping("api/acct/payments")
-    public ResponseEntity<Status> editPayments(@RequestBody PaymentDTOIn payment) {
+    public ResponseEntity<Status> editPayments(@Valid @RequestBody PaymentDTOIn payment) {
         paymentService.editPayment(payment);
         return ResponseEntity.ok(new Status("Updated successfully!"));
     }

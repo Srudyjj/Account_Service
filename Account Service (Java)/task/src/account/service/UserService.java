@@ -35,7 +35,7 @@ public class UserService {
     public AppUser findUserByEmail(String email) {
         return repository
                 .findAppUserByEmailIgnoreCase(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User not found"));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
     }
 
     public List<AppUser> getUsers() {
@@ -47,6 +47,12 @@ public class UserService {
         repository.delete(user);
     }
 
+    @Transactional
+    public AppUser updateUser(AppUser user) {
+        return repository.save(user);
+    }
+
+    @Transactional
     public AppUser register(String name, String lastname, String email, String password) {
         Optional<AppUser> appUserByEmail = repository.findAppUserByEmailIgnoreCase(email);
         if (appUserByEmail.isPresent()) {
@@ -60,6 +66,7 @@ public class UserService {
         return repository.save(user);
     }
 
+    @Transactional
     public String updatePassword(String email, String password) {
         AppUser appUser = repository.findAppUserByEmailIgnoreCase(email)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "User doesn't exist!"));
@@ -78,10 +85,10 @@ public class UserService {
     private void setUserGroup(AppUser appUser) {
         if(repository.count() == 0) {
             Group administrator = groupRepository.findByNameIgnoreCase(ROLE.ADMINISTRATOR).orElseThrow();
-            appUser.setUserGroup(administrator);
+            appUser.addUserGroup(administrator);
         } else {
             Group administrator = groupRepository.findByNameIgnoreCase(ROLE.USER).orElseThrow();
-            appUser.setUserGroup(administrator);
+            appUser.addUserGroup(administrator);
         }
     }
 }

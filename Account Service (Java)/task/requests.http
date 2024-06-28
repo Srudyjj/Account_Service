@@ -79,5 +79,41 @@ GET http://localhost:28852/api/admin/user
 Content-Type: application/json 
 
 ###
-DELETE  http://localhost:28852/api/admin/user/johndoe@acme.com
+DELETE  http://localhost:28852/api/admin/user/johndoe121@acme.com
 Content-Type: application/json 
+Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXRzZWNyZXRzZWNyZXQ=
+
+###
+PUT http://localhost:28852/api/admin/user/role
+Content-Type: application/json 
+
+{
+   "user": "johndoe1@acme.com",
+   "role": "ACCOUNTANT",
+   "operation": "GRANT"
+}
+
+###
+POST http://localhost:28852/api/auth/signup
+Content-Type: application/json
+
+{
+  "name": "John",
+  "lastname": "Doe",
+  "email": "johndoe1@acme.com",
+  "password": "secretsecretsecret"
+}
+
+###
+POST http://localhost:28852/api/auth/changepass
+Content-Type: application/json
+Authorization: Basic am9obmRvZTFAYWNtZS5jb206b01vYTNWdnFuTHhX
+
+{
+  "new_password": "oMoa3VvqnLxW"
+}
+
+###
+GET http://localhost:28852/api/admin/user/
+Content-Type: application/json 
+Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXRzZWNyZXRzZWNyZXQ=
