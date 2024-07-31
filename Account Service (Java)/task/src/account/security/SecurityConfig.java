@@ -29,6 +29,7 @@ public class SecurityConfig {
                         .requestMatchers(toH2Console()).permitAll()
                         .requestMatchers("/error").permitAll()
                         .requestMatchers("/actuator/shutdown").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/security/events").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/signup").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/empl/payment").hasAnyAuthority("ACCOUNTANT", "USER")
                         .requestMatchers(HttpMethod.GET, "/api/admin/user/**").hasAuthority("ADMINISTRATOR")
