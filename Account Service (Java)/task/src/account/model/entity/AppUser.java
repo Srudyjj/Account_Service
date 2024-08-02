@@ -28,6 +28,12 @@ public class AppUser {
     @Column(nullable = false)
     private String password;
 
+    @Column
+    private boolean isLocked;
+
+    @Column
+    private int failedLogInAttempt;
+
     @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
     private Set<Group> userGroups = new HashSet<>();
 
@@ -79,6 +85,22 @@ public class AppUser {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public boolean isLocked() {
+        return isLocked;
+    }
+
+    public void setLocked(boolean locked) {
+        isLocked = locked;
+    }
+
+    public int getFailedLogInAttempt() {
+        return failedLogInAttempt;
+    }
+
+    public void setFailedLogInAttempt(int failedLogInAttempt) {
+        this.failedLogInAttempt = failedLogInAttempt;
     }
 
     public Set<Group> getUserGroups() {

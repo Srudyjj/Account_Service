@@ -7,6 +7,7 @@ import account.repository.AppUserRepository;
 import account.repository.GroupRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -16,6 +17,7 @@ import java.util.Optional;
 
 @Service
 public class UserService {
+    public static final int MAX_FAILED_ATTEMPTS = 5;
 
     private final AppUserRepository repository;
 
@@ -35,7 +37,7 @@ public class UserService {
     public AppUser findUserByEmail(String email) {
         return repository
                 .findAppUserByEmailIgnoreCase(email)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found!"));
+                .orElseThrow(() -> new UsernameNotFoundException("User not found"));
     }
 
     public List<AppUser> getUsers() {
@@ -90,5 +92,30 @@ public class UserService {
             Group administrator = groupRepository.findByNameIgnoreCase(ROLE.USER).orElseThrow();
             appUser.addUserGroup(administrator);
         }
+    }
+
+    @Transactional
+    public void increaseFailedAttempts(AppUser user) {
+        int newFailAttempts = user.getFailedLogInAttempt() + 1;
+        user.setFailedLogInAttempt(newFailAttempts);
+        repository.save(user);
+    }
+
+    @Transactional
+    public void resetFailedAttempts(AppUser user) {
+        user.setFailedLogInAttempt(0);
+        repository.save(user);
+    }
+
+    @Transactional
+    public void lock(AppUser user) {
+        user.setLocked(true);
+        repository.save(user);
+    }
+
+    @Transactional
+    public void unLock(AppUser user) {
+        user.setLocked(false);
+        repository.save(user);
     }
 }

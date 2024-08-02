@@ -2,6 +2,7 @@ package account.model.entity;
 
 import jakarta.persistence.*;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
@@ -74,5 +75,18 @@ public class Group {
     public void removeUser(AppUser user) {
         this.users.remove(user);
         user.getUserGroups().remove(this);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Group group = (Group) o;
+        return Objects.equals(name, group.name) && Objects.equals(code, group.code);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, code);
     }
 }

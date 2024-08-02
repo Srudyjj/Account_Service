@@ -1,7 +1,8 @@
-package account.security;
+package account.service;
 
 import account.model.entity.AppUser;
 import account.repository.AppUserRepository;
+import account.security.AppUserAdapter;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
