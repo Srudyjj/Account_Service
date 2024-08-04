@@ -4,14 +4,14 @@ Content-Type: application/json
 {
   "name": "John1",
   "lastname": "Doe1",
-  "email": "johndoe1@acme.com",
-  "password": "secretsecretsecret"
+  "email": "JohnDoe1@acme.com",
+  "password": "secretsecret"
 }
 
 ###
 
 GET http://localhost:28852/api/empl/payment
-Authorization: Basic Og==
+Authorization: Basic am9obmRvZTFAYWNtZS5jb206YWFhYQ==
 
 ###
 
@@ -86,11 +86,11 @@ Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXRzZWNyZXRzZWNyZXQ=
 ###
 PUT http://localhost:28852/api/admin/user/role
 Content-Type: application/json 
-Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXRzZWNyZXRzZWNyZXQ=
+Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXRzZWNyZXQ=
 
 {
    "user": "johndoe1@acme.com",
-   "role": "ACCOUNTANT",
+   "role": "AUDITOR",
    "operation": "GRANT"
 }
 
@@ -122,3 +122,4 @@ Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXRzZWNyZXRzZWNyZXQ=
 ###
 GET http://localhost:28852/api/security/events
 Content-Type: application/json 
+Authorization: Basic am9obmRvZTFAYWNtZS5jb206c2VjcmV0c2VjcmV0

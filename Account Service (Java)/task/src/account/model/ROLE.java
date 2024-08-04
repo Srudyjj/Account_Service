@@ -1,7 +1,9 @@
 package account.model;
 
 public interface ROLE {
-    public String ADMINISTRATOR = "ROLE_ADMINISTRATOR";
-    public String USER = "ROLE_USER";
-    public String ACCOUNTANT = "ROLE_ACCOUNTANT";
+    String ADMINISTRATOR = "ROLE_ADMINISTRATOR";
+    String USER = "ROLE_USER";
+    String ACCOUNTANT = "ROLE_ACCOUNTANT";
+
+    String AUDITOR = "ROLE_AUDITOR";
 }

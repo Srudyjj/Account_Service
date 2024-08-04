@@ -30,12 +30,24 @@ public class SecurityEvent {
     public SecurityEvent() {
     }
 
+    public SecurityEvent(String action, String subject, String object, String path) {
+        this.date = LocalDateTime.now();
+        this.action = action;
+        this.subject = subject;
+        this.object = object;
+        this.path = path;
+    }
+
     public SecurityEvent(LocalDateTime date, String action, String subject, String object, String path) {
         this.date = date;
         this.action = action;
         this.subject = subject;
         this.object = object;
         this.path = path;
+    }
+
+    public SecurityEvent(String action, String object, String path) {
+        this(action, "Anonymous", object, path);
     }
 
     public Long getId() {

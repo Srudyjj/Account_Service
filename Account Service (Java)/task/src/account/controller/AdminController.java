@@ -6,12 +6,18 @@ import account.model.dto.DeleteUserResponse;
 import account.model.dto.SingUpDTO;
 import account.model.entity.AppUser;
 import account.model.entity.Group;
+import account.model.entity.SecurityEvent;
 import account.repository.GroupRepository;
+import account.security.SecEvent;
+import account.service.SecurityEventService;
 import account.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -24,9 +30,12 @@ public class AdminController {
     private final UserService userService;
     private final GroupRepository groupRepository;
 
-    public AdminController(UserService userService, GroupRepository groupRepository) {
+    private final SecurityEventService eventService;
+
+    public AdminController(UserService userService, GroupRepository groupRepository, SecurityEventService eventService) {
         this.userService = userService;
         this.groupRepository = groupRepository;
+        this.eventService = eventService;
     }
 
     @GetMapping("/user/**")
@@ -50,7 +59,7 @@ public class AdminController {
     }
 
     @PutMapping("/user/role")
-    public ResponseEntity<SingUpDTO> changeUserRole(@RequestBody ChangeUserRole userRole) {
+    public ResponseEntity<SingUpDTO> changeUserRole(@RequestBody ChangeUserRole userRole, @AuthenticationPrincipal UserDetails subjectUserDetails, HttpServletRequest request) {
         AppUser user = userService.findUserByEmail(userRole.user());
         Group group = groupRepository.findByNameIgnoreCase("ROLE_" + userRole.role())
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Role not found!"));
@@ -70,6 +79,11 @@ public class AdminController {
             }
 
             user.addUserGroup(group);
+            eventService.addSecurityEvent(new SecurityEvent(
+                    SecEvent.GRANT_ROLE.toString(),
+                    subjectUserDetails.getUsername(),
+                    String.format("Grant role %s to %s", userRole.role(), user.getEmail()),
+                    request.getRequestURI()));
         } else if (userRole.operation() == ChangeUserRole.OPERATION.REMOVE) {
             if (group.getName().equals(ROLE.ADMINISTRATOR)) {
                 throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't remove ADMINISTRATOR role!");
@@ -84,6 +98,11 @@ public class AdminController {
             }
 
             user.removeUserGroup(group);
+            eventService.addSecurityEvent(new SecurityEvent(
+                    SecEvent.REMOVE_ROLE.toString(),
+                    subjectUserDetails.getUsername(),
+                    String.format("Remove role %s from %s", userRole.role(), user.getEmail()),
+                    request.getRequestURI()));
         }
 
         AppUser updatedUser = userService.updateUser(user);
