@@ -18,11 +18,17 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 @Configuration
 public class SecurityConfig {
 
+    private final CustomAccessDeniedHandler accessDeniedHandler;
+
+    public SecurityConfig(CustomAccessDeniedHandler accessDeniedHandler) {
+        this.accessDeniedHandler = accessDeniedHandler;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .httpBasic(Customizer.withDefaults())
-                .exceptionHandling(ex -> ex.authenticationEntryPoint(new RestAuthenticationEntryPoint())) // Handle auth errors
+                .httpBasic().authenticationEntryPoint(new RestAuthenticationEntryPoint())
+                .and()
                 .csrf(csrf -> csrf.ignoringRequestMatchers(toH2Console()).disable())
                 .headers(headers -> headers.frameOptions().disable()) // For the H2 console
                 .authorizeHttpRequests(auth -> auth  // manage access
@@ -41,9 +47,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/api/auth/changepass").authenticated()
                         .anyRequest().denyAll()
                 )
-                .exceptionHandling(handler -> handler.accessDeniedHandler((request, response, accessDeniedException) -> {
-                    response.sendError(HttpStatus.FORBIDDEN.value(), "Access Denied!");
-                }))
+                .exceptionHandling(handler -> handler.accessDeniedHandler(accessDeniedHandler))
                 .sessionManagement(sessions -> sessions
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // no session
                 );

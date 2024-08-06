@@ -11,7 +11,7 @@ Content-Type: application/json
 ###
 
 GET http://localhost:28852/api/empl/payment
-Authorization: Basic am9obmRvZTFAYWNtZS5jb206YWFhYQ==
+Authorization: Basic am9obmRvZTFAYWNtZS5jb206c2VjcmV0c2VjcmV0
 
 ###
 

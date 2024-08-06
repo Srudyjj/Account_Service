@@ -51,23 +51,16 @@ public class AuthController {
     }
 
     @PostMapping("/changepass")
-    public ResponseEntity<ChangePassResponse> changepass(@AuthenticationPrincipal UserDetails details, @Valid @RequestBody ChangePassRequest request) {
+    public ResponseEntity<ChangePassResponse> changepass(@AuthenticationPrincipal UserDetails details,
+                                                         @Valid @RequestBody ChangePassRequest request,
+                                                         HttpServletRequest httpServletRequest) {
         String email = userService.updatePassword(details.getUsername(), request.getNewPassword());
+        eventService.addSecurityEvent(new SecurityEvent(
+                SecEvent.CHANGE_PASSWORD.toString(),
+                details.getUsername(),
+                details.getUsername(),
+                httpServletRequest.getRequestURI()));
         return ResponseEntity.ok(new ChangePassResponse(email,
                 "The password has been updated successfully"));
-    }
-
-    private static String notEmpty(String string) {
-        if (string == null || string.isBlank()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return string;
-    }
-
-    private static String validEmail(String string) {
-        if (!string.contains("@") || !string.endsWith("@acme.com")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
-        }
-        return string;
     }
 }
