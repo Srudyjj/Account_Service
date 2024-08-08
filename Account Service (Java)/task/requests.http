@@ -4,14 +4,14 @@ Content-Type: application/json
 {
   "name": "John1",
   "lastname": "Doe1",
-  "email": "JohnDoe1@acme.com",
+  "email": "JohnDoe2@acme.com",
   "password": "secretsecret"
 }
 
 ###
 
 GET http://localhost:28852/api/empl/payment
-Authorization: Basic am9obmRvZTFAYWNtZS5jb206c2VjcmV0c2VjcmV0
+Authorization: Basic Sm9obkRvZTJAYWNtZS5jb206MTIzNDU2
 
 ###
 
@@ -123,3 +123,13 @@ Authorization: Basic am9obmRvZUBhY21lLmNvbTpzZWNyZXRzZWNyZXRzZWNyZXQ=
 GET http://localhost:28852/api/security/events
 Content-Type: application/json 
 Authorization: Basic am9obmRvZTFAYWNtZS5jb206c2VjcmV0c2VjcmV0
+
+###
+PUT http://localhost:28852/api/admin/user/access
+Content-Type: application/json 
+Authorization: Basic Sm9obkRvZTFAYWNtZS5jb206c2VjcmV0c2VjcmV0
+
+{
+   "user": "johndoe1@acme.com",
+   "operation": "LOCK"
+}

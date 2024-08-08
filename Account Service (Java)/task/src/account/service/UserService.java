@@ -116,6 +116,7 @@ public class UserService {
     @Transactional
     public void unLock(AppUser user) {
         user.setLocked(false);
+        user.setFailedLogInAttempt(0);
         repository.save(user);
     }
 }

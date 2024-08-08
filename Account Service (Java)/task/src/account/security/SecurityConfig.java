@@ -41,6 +41,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/api/admin/user/**").hasAuthority("ADMINISTRATOR")
                         .requestMatchers(HttpMethod.DELETE, "/api/admin/user/**").hasAuthority("ADMINISTRATOR")
                         .requestMatchers(HttpMethod.PUT, "/api/admin/user/role").hasAuthority("ADMINISTRATOR")
+                        .requestMatchers(HttpMethod.PUT, "/api/admin/user/access").hasAuthority("ADMINISTRATOR")
                         .requestMatchers(HttpMethod.POST, "/api/acct/payments").hasAuthority("ACCOUNTANT")
                         .requestMatchers(HttpMethod.PUT, "/api/acct/payments").hasAuthority("ACCOUNTANT")
                         .requestMatchers(HttpMethod.GET, "/api/acct/payments").hasAnyAuthority("ACCOUNTANT", "USER")

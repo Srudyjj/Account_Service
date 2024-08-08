@@ -10,9 +10,9 @@ import account.service.SecurityEventService;
 import account.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.context.event.EventListener;
-import org.springframework.security.authentication.event.AbstractAuthenticationFailureEvent;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
@@ -38,9 +38,19 @@ public class AuthenticationEventsListener {
         this.userRepository = userRepository;
     }
 
+    private static String getRequestURI() {
+        ServletRequestAttributes attrs =
+                (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
+        return attrs.getRequest().getRequestURI();
+    }
+
+    @Transactional
     @EventListener
     public void onSuccess(AuthenticationSuccessEvent successEvent) {
-        System.out.println(successEvent);
+        UserDetails appUserDetails = (UserDetails) successEvent.getAuthentication().getPrincipal();
+        userRepository
+                .findAppUserByEmailIgnoreCase(appUserDetails.getUsername())
+                .ifPresent(userService::resetFailedAttempts);
     }
 
     @EventListener
@@ -61,41 +71,36 @@ public class AuthenticationEventsListener {
             AppUser currentUser = user.get();
             Group administrator = groupRepository.findByNameIgnoreCase(ROLE.ADMINISTRATOR).orElseThrow();
 
+            eventService.addSecurityEvent(new SecurityEvent(
+                    toLocalDateTime(failureEvent.getTimestamp()),
+                    SecEvent.LOGIN_FAILED.toString(),
+                    username,
+                    getRequestURI(),
+                    getRequestURI()));
+
             if (currentUser.getUserGroups().contains(administrator)) {
-                eventService.addSecurityEvent(new SecurityEvent(
-                        toLocalDateTime(failureEvent.getTimestamp()),
-                        SecEvent.LOGIN_FAILED.toString(),
-                        username,
-                        getRequestURI(),
-                        getRequestURI()));
                 return;
             }
 
             if (!currentUser.isLocked()) {
                 userService.increaseFailedAttempts(currentUser);
-                eventService.addSecurityEvent(new SecurityEvent(
-                        toLocalDateTime(failureEvent.getTimestamp()),
-                        SecEvent.LOGIN_FAILED.toString(),
-                        username,
-                        getRequestURI(),
-                        getRequestURI()));
-            }
 
-            if (currentUser.getFailedLogInAttempt() > UserService.MAX_FAILED_ATTEMPTS) {
-                eventService.addSecurityEvent(new SecurityEvent(
-                        toLocalDateTime(failureEvent.getTimestamp()),
-                        SecEvent.BRUTE_FORCE.toString(),
-                        username,
-                        getRequestURI(),
-                        getRequestURI()));
+                if (currentUser.getFailedLogInAttempt() >= UserService.MAX_FAILED_ATTEMPTS) {
+                    eventService.addSecurityEvent(new SecurityEvent(
+                            toLocalDateTime(failureEvent.getTimestamp()),
+                            SecEvent.BRUTE_FORCE.toString(),
+                            username,
+                            getRequestURI(),
+                            getRequestURI()));
 
-                userService.lock(currentUser);
-                eventService.addSecurityEvent(new SecurityEvent(
-                        toLocalDateTime(failureEvent.getTimestamp()),
-                        SecEvent.LOCK_USER.toString(),
-                        username,
-                        String.format("Lock user %s", username.toLowerCase()),
-                        getRequestURI()));
+                    userService.lock(currentUser);
+                    eventService.addSecurityEvent(new SecurityEvent(
+                            toLocalDateTime(failureEvent.getTimestamp()),
+                            SecEvent.LOCK_USER.toString(),
+                            username,
+                            String.format("Lock user %s", username.toLowerCase()),
+                            getRequestURI()));
+                }
             }
         }
     }
@@ -104,11 +109,5 @@ public class AuthenticationEventsListener {
         return LocalDateTime.ofInstant(
                 Instant.ofEpochSecond(timestamp / 1000), TimeZone.getDefault().toZoneId()
         );
-    }
-
-    private static String getRequestURI() {
-        ServletRequestAttributes attrs =
-                (ServletRequestAttributes) RequestContextHolder.currentRequestAttributes();
-        return attrs.getRequest().getRequestURI();
     }
 }

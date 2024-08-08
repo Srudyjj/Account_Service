@@ -1,9 +1,7 @@
 package account.controller;
 
 import account.model.ROLE;
-import account.model.dto.ChangeUserRole;
-import account.model.dto.DeleteUserResponse;
-import account.model.dto.SingUpDTO;
+import account.model.dto.*;
 import account.model.entity.AppUser;
 import account.model.entity.Group;
 import account.model.entity.SecurityEvent;
@@ -98,5 +96,26 @@ public class AdminController {
         AppUser updatedUser = userService.updateUser(user);
 
         return ResponseEntity.ok(new SingUpDTO(updatedUser));
+    }
+
+    @PutMapping("/user/access")
+    public ResponseEntity<Status> lockUnlockUser(@RequestBody LockUnlockUserDTO userOperation, @AuthenticationPrincipal UserDetails subjectUserDetails, HttpServletRequest request) {
+        AppUser user = userService.findUserByEmail(userOperation.user());
+        boolean isUserAdmin = user.getUserGroups().stream().anyMatch(g -> g.getName().equals(ROLE.ADMINISTRATOR));
+
+        if (userOperation.operation() == LockUnlockUserDTO.OPERATION.LOCK) {
+            if (isUserAdmin) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Can't lock the ADMINISTRATOR!");
+            }
+            userService.lock(user);
+            eventService.addSecurityEvent(new SecurityEvent(SecEvent.LOCK_USER.toString(), subjectUserDetails.getUsername(), String.format("Lock user %s", user.getEmail()), request.getRequestURI()));
+            return ResponseEntity.ok(new Status(String.format("User %s %s!", user.getEmail(), "locked")));
+        } else if (userOperation.operation() == LockUnlockUserDTO.OPERATION.UNLOCK) {
+            userService.unLock(user);
+            eventService.addSecurityEvent(new SecurityEvent(SecEvent.UNLOCK_USER.toString(), subjectUserDetails.getUsername(), String.format("Unlock user %s", user.getEmail()), request.getRequestURI()));
+            return ResponseEntity.ok(new Status(String.format("User %s %s!", user.getEmail(), "unlocked")));
+        }
+
+        throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Wrong operation type" + userOperation.operation());
     }
 }
